@@ -35,6 +35,14 @@ def main():
     screen.fill(WHITE)
     pygame.display.update()
 
+    is_running = True
+    while is_running:  # main game loop
+        screen.fill(WHITE)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                is_running = False
+
 
 if __name__ == '__main__':
     main()
