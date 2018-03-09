@@ -8,7 +8,6 @@ from pygame.constants import *
 #             R    G    B
 BLACK     = (  0,   0,   0)
 BLUE      = (  0,   0, 255)
-CYAN      = (  0, 255, 255)
 GRAY      = (100, 100, 100)
 GREEN     = (  0, 255,   0)
 ORANGE    = (255, 165,   0)
@@ -22,12 +21,21 @@ YELLOW    = (255, 255,   0)
 pygame.init()
 
 # Fenstergroesse
-board_length = 900
-board_height = 700
+window_length = 900
+window_height = 700
 
 # Das Fenster erstellen
-screen = pygame.display.set_mode((board_length, board_height), 0, 32)
+screen = pygame.display.set_mode((window_length, window_height), 0, 32)
 pygame.display.set_caption('Mastermind')
+
+#game informationen
+gameboard_height = window_height
+gameboard_width = window_length / 2
+
+#Funktionen
+def zeichne_gameboard():
+    anz_versuche = 12
+    
 
 
 #Main Programm
