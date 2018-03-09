@@ -18,28 +18,49 @@ WHITE     = (255, 255, 255)
 YELLOW    = (255, 255,   0)
 
 
-pygame.init()
 
-# Fenstergroesse
-window_length = 900
-window_height = 700
+class Spiel:
+    def __init__(self, screen, window_length, window_height, gameboard_width, gameboard_height, ebene, player, anz_versuche):
+        self.screen = screen
+        self.window_length = window_length
+        self.window_height = window_height
+        self.gameboard_width = gameboard_width
+        self.gameboard_height = gameboard_height
+        self.ebene = ebene
+        self.player = player
+        self.anz_versuche = anz_versuche
 
-# Das Fenster erstellen
-screen = pygame.display.set_mode((window_length, window_height), 0, 32)
-pygame.display.set_caption('Mastermind')
+    def zeichne_gameboard(self):
+        kasten_height = self.gameboard_height / (self.anz_versuche + 2)
+        kasten_width = self.gameboard_width
 
-#game informationen
-gameboard_height = window_height
-gameboard_width = window_length / 2
+        x_koordinate = self.window_length / 4
+        y_koordinate = self.window_height
 
-#Funktionen
-def zeichne_gameboard():
-    anz_versuche = 12
-    
+        for i in range(anz_versuche):
+            pygame.draw.rect(screen, BLACK, (x_koordinate, y_koordinate, kasten_width, kasten_height), 1)
+            y_koordinate -= kasten_height
 
 
 #Main Programm
 def main():
+    pygame.init()
+
+    # Fenstergroesse
+    window_length = 900
+    window_height = 700
+
+    # Das Fenster erstellen
+    screen = pygame.display.set_mode((window_length, window_height), 0, 32)
+    pygame.display.set_caption('Mastermind')
+
+    # game informationen
+    gameboard_width = window_length / 2
+    gameboard_height = window_height
+
+    anz_versuche = 12
+
+
     screen.fill(WHITE)
     pygame.display.update()
 
