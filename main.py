@@ -31,14 +31,14 @@ class Spiel:
         self.anz_versuche = anz_versuche
 
     def zeichne_gameboard(self):
+        kasten_length = self.gameboard_width
         kasten_height = self.gameboard_height / (self.anz_versuche + 2)
-        kasten_width = self.gameboard_width
 
         x_koordinate = self.window_length / 4
         y_koordinate = self.window_height
 
         for i in range(anz_versuche):
-            pygame.draw.rect(screen, BLACK, (x_koordinate, y_koordinate, kasten_width, kasten_height), 1)
+            pygame.draw.rect(screen, BLACK, (x_koordinate, y_koordinate, kasten_length, kasten_height), 1)
             y_koordinate -= kasten_height
 
 
