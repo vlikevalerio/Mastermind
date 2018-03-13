@@ -32,17 +32,17 @@ class Spiel:
 
     def zeichne_gameboard(self):
         kasten_length = self.gameboard_width
-        kasten_height = self.gameboard_height / (self.anz_versuche + 2)
+        kasten_height = (self.gameboard_height - 2) / (self.anz_versuche + 2)
 
-        x_koordinate = self.window_length / 4
-        y_koordinate = self.window_height
+        x_koordinate = self.window_length / 3
+        y_koordinate = self.window_height - 1
 
-        for i in range(anz_versuche):
-            pygame.draw.rect(screen, BLACK, (x_koordinate, y_koordinate, kasten_length, kasten_height), 1)
+        for i in range(self.anz_versuche):
+            pygame.draw.rect(self.screen, BLACK, (x_koordinate, y_koordinate, kasten_length, - kasten_height), 1)
             y_koordinate -= kasten_height
 
         y_koordinate -= kasten_height
-        pygame.draw.rect(screen, BLACK, (x_koordinate, y_koordinate, kasten_length, kasten_height), 1)
+        pygame.draw.rect(self.screen, BLACK, (x_koordinate, y_koordinate, kasten_length, - kasten_height), 1)
 
 
 
@@ -60,14 +60,18 @@ def main():
     pygame.display.set_caption('Mastermind')
 
     # game informationen
-    gameboard_width = window_length / 2
+    gameboard_width = window_length / 3
     gameboard_height = window_height
 
     anz_versuche = 12
+    ebene = 0
+    player = 1
 
-
+###-------------------------------------------------------------------------###
     screen.fill(WHITE)
     pygame.display.update()
+
+    my_game = Spiel(screen, window_length, window_height, gameboard_width, gameboard_height, ebene, player, anz_versuche)
 
     is_running = True
     while is_running:  # main game loop
@@ -77,6 +81,8 @@ def main():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 is_running = False
 
+        my_game.zeichne_gameboard()
+        pygame.display.update()
 
 
 
