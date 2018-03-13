@@ -41,6 +41,11 @@ class Spiel:
             pygame.draw.rect(screen, BLACK, (x_koordinate, y_koordinate, kasten_length, kasten_height), 1)
             y_koordinate -= kasten_height
 
+        y_koordinate -= kasten_height
+        pygame.draw.rect(screen, BLACK, (x_koordinate, y_koordinate, kasten_length, kasten_height), 1)
+
+
+
 
 #Main Programm
 def main():
@@ -71,6 +76,8 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 is_running = False
+
+
 
 
 if __name__ == '__main__':
