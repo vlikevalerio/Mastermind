@@ -18,31 +18,66 @@ WHITE     = (255, 255, 255)
 YELLOW    = (255, 255,   0)
 
 
+class Kreis:
+    def __init__(self, x, y, radius):
+        self.x = x
+        self.y = y
+        self.radius = radius
+        self.is_active = False
+        self.farbe = None
+
 
 class Spiel:
-    def __init__(self, screen, window_length, window_height, gameboard_width, gameboard_height, ebene, player, anz_versuche):
+    def __init__(self, screen, window_length, window_height, gameboard_width, gameboard_height, max_anz_versuche, player=1, kreisnummer=1):
         self.screen = screen
         self.window_length = window_length
         self.window_height = window_height
         self.gameboard_width = gameboard_width
         self.gameboard_height = gameboard_height
-        self.ebene = ebene
+        self.anz_versuche = max_anz_versuche
+        self.ebene = 0
         self.player = player
-        self.anz_versuche = anz_versuche
+        self.kreisnummer = kreisnummer
+        self.kasten_length = self.gameboard_width
+        self.kasten_height = self.gameboard_height / (self.anz_versuche + 3)
 
-    def zeichne_gameboard(self):
-        kasten_length = self.gameboard_width
-        kasten_height = (self.gameboard_height - 2) / (self.anz_versuche + 2)
+        radius = self.kasten_height / 4
+        self.steckplatz = [[0 for i in range(4)] for j in range(max_anz_versuche)]
 
         x_koordinate = self.window_length / 3
-        y_koordinate = self.window_height - 1
+        y_koordinate = self.window_height - (1/2)*self.kasten_height
+
+        for i in range(len(self.steckplatz)):
+
+            for j in range(len(self.steckplatz[i])):
+
+                self.steckplatz[i][j] = Kreis()
+
+    def zeichne_gameboard(self):
+        x_koordinate = self.window_length / 3
+        y_koordinate = self.window_height - (1/2)*self.kasten_height
 
         for i in range(self.anz_versuche):
-            pygame.draw.rect(self.screen, BLACK, (x_koordinate, y_koordinate, kasten_length, - kasten_height), 1)
-            y_koordinate -= kasten_height
+            #Koordinaten für die Kreise
+            x_kreis = x_koordinate + self.kasten_height + (1/2) * ((self.kasten_length - self.kasten_height) / 4)
+            y_kreis = y_koordinate
 
-        y_koordinate -= kasten_height
-        pygame.draw.rect(self.screen, BLACK, (x_koordinate, y_koordinate, kasten_length, - kasten_height), 1)
+            #Kasten erstellen
+            pygame.draw.rect(self.screen, BLACK, (x_koordinate, y_koordinate, self.kasten_length, - self.kasten_height), 1)
+            #Rückmeldungsbereich erstellen (als Quadrat)
+            pygame.draw.rect(self.screen, BLACK, (x_koordinate, y_koordinate, self.kasten_height, - self.kasten_height), 1)
+
+            #leere Kreise erstellen
+            # for i in range(4):
+            #     radius_kreis = self.kasten_height / 2
+            #     pygame.draw.circle(self.screen, BLACK, (x_kreis, y_kreis), radius_kreis, 1)
+            #     x_kreis += (kasten_length - self.kasten_height) / 4
+
+            y_koordinate -= self.kasten_height
+
+
+        y_koordinate -= self.kasten_height
+        pygame.draw.rect(self.screen, BLACK, (x_koordinate, y_koordinate, self.kasten_length, - self.kasten_height), 1)
 
 
 
@@ -71,7 +106,7 @@ def main():
     screen.fill(WHITE)
     pygame.display.update()
 
-    my_game = Spiel(screen, window_length, window_height, gameboard_width, gameboard_height, ebene, player, anz_versuche)
+    my_game = Spiel(screen, window_length, window_height, gameboard_width, gameboard_height, anz_versuche, ebene, player)
 
     is_running = True
     while is_running:  # main game loop
