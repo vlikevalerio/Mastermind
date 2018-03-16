@@ -1,21 +1,24 @@
 #Dies ist das Projekt von Valerio und Timo
 #Projektziel:   1. Mastermind (Spiel) auf pygame installieren
-#               2. Netzwerk für Multiplayer aufbauen
+#               (2. Netzwerk für Multiplayer aufbauen)
 
 import pygame
 from pygame.constants import *
 
-#             R    G    B
-BLACK     = (  0,   0,   0)
-BLUE      = (  0,   0, 255)
-GRAY      = (100, 100, 100)
-GREEN     = (  0, 255,   0)
-ORANGE    = (255, 165,   0)
-PINK      = (255,   8, 127)
-PURPLE    = (255,   0, 255)
-RED       = (255,   0,   0)
-WHITE     = (255, 255, 255)
-YELLOW    = (255, 255,   0)
+#              R    G    B
+BACKGROUND = (110, 193, 150)
+BLACK      = (  0,   0,   0)
+BLUE       = (  0,   0, 255)
+GRAY       = (100, 100, 100)
+GREEN      = (  0, 255,   0)
+ORANGE     = (255, 165,   0)
+PINK       = (255,   8, 127)
+PURPLE     = (255,   0, 255)
+RED        = (255,   0,   0)
+WHITE      = (255, 255, 255)
+YELLOW     = (255, 255,   0)
+
+FARBE = [WHITE, GRAY, BLACK, BLUE, PURPLE, PINK, RED, ORANGE, YELLOW, GREEN]
 
 
 class Kreis:
@@ -27,7 +30,7 @@ class Kreis:
         self.farbe = None
 
 
-class Spiel:
+class Gameboard:
     def __init__(self, screen, window_length, window_height, gameboard_width, gameboard_height, max_anz_versuche, player=1, kreisnummer=1):
         self.screen = screen
         self.window_length = window_length
@@ -47,11 +50,11 @@ class Spiel:
         x_koordinate = self.window_length / 3
         y_koordinate = self.window_height - (1/2)*self.kasten_height
 
-        for i in range(len(self.steckplatz)):
-
-            for j in range(len(self.steckplatz[i])):
-
-                self.steckplatz[i][j] = Kreis()
+        # for i in range(len(self.steckplatz)):
+        #
+        #     for j in range(len(self.steckplatz[i])):
+        #
+        #         self.steckplatz[i][j] = Kreis()
 
     def zeichne_gameboard(self):
         x_koordinate = self.window_length / 3
@@ -80,7 +83,18 @@ class Spiel:
         pygame.draw.rect(self.screen, BLACK, (x_koordinate, y_koordinate, self.kasten_length, - self.kasten_height), 1)
 
 
+class Button:
+    def __init__(self, length, height, text, farbe_text, farbe_box, x_kord, y_kord):
+        self.length = length
+        self.heigth = height
+        self.text = text
+        self.farbe_text = farbe_text
+        self.farbe_box = farbe_box
+        self.x_kord = x_kord
+        self.y_kord = y_kord
 
+    def zeichne_button(self):
+        pass
 
 #Main Programm
 def main():
@@ -93,24 +107,30 @@ def main():
     # Das Fenster erstellen
     screen = pygame.display.set_mode((window_length, window_height), 0, 32)
     pygame.display.set_caption('Mastermind')
+    screen.fill(BACKGROUND)
+
 
     # game informationen
     gameboard_width = window_length / 3
     gameboard_height = window_height
 
-    anz_versuche = 12
+    max_anz_versuche = 12
     ebene = 0
     player = 1
 
-###-------------------------------------------------------------------------###
-    screen.fill(WHITE)
-    pygame.display.update()
+    FPS = 10
+    fps_clock = pygame.time.Clock()
+    gameboard_width = window_length / 3
+    gameboard_height = window_height
 
-    my_game = Spiel(screen, window_length, window_height, gameboard_width, gameboard_height, anz_versuche, ebene, player)
+    end_turn = False
+
+###-------------------------------------------------------------------------###
+    my_game = Gameboard(screen, window_length, window_height, gameboard_width, gameboard_height, max_anz_versuche, ebene, player)
 
     is_running = True
     while is_running:  # main game loop
-        screen.fill(WHITE)
+        screen.fill(BACKGROUND)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
