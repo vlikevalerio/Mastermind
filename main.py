@@ -101,7 +101,7 @@ class Gameboard:
                     pygame.draw.circle(self.screen, self.steckplatz[i][j].farbe,
                                        (self.steckplatz[i][j].x, self.steckplatz[i][j].y), self.steckplatz[i][j].radius, 0)
                     pygame.draw.circle(self.screen, BLACK,
-                                       (self.steckplatz[i][j].x, self.steckplatz[i][j].y), self.steckplatz[i][j].radius, 1)
+                                       (self.steckplatz[i][j].x, self.steckplatz[i][j].y), self.steckplatz[i][j].radius, 2)
 
 
             y_koordinate -= self.kasten_height
@@ -116,7 +116,7 @@ class Gameboard:
             pygame.draw.circle(self.screen, self.vorlagekasten[i].farbe,
                                (self.vorlagekasten[i].x, self.vorlagekasten[i].y), self.vorlagekasten[i].radius, 0)
             pygame.draw.circle(self.screen, BLACK,
-                               (self.vorlagekasten[i].x, self.vorlagekasten[i].y), self.vorlagekasten[i].radius, 1)
+                               (self.vorlagekasten[i].x, self.vorlagekasten[i].y), self.vorlagekasten[i].radius, 2)
 
 class Button:
     def __init__(self, length, height, text, farbe_text, farbe_box, x_kord, y_kord):
