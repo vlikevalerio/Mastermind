@@ -7,6 +7,8 @@ from pygame.constants import *
 
 #              R    G    B
 BACKGROUND = (110, 193, 150)
+BOARDCOLOR = (168, 101,   9)
+KREISCOLOR = (128,  61,   9)
 BLACK      = (  0,   0,   0)
 BLUE       = (  0,   0, 255)
 GRAY       = (100, 100, 100)
@@ -23,11 +25,11 @@ FARBE = [WHITE, GRAY, BLACK, BLUE, PURPLE, PINK, RED, ORANGE, YELLOW, GREEN]
 
 class Kreis:
     def __init__(self, x, y, radius):
-        self.x = x
-        self.y = y
-        self.radius = radius
+        self.x = int(x)
+        self.y = int(y)
+        self.radius = int(radius)
         self.is_active = False
-        self.farbe = None
+        self.farbe = KREISCOLOR
 
 
 class Gameboard:
@@ -43,18 +45,38 @@ class Gameboard:
         self.kreisnummer = kreisnummer
         self.kasten_length = self.gameboard_width
         self.kasten_height = self.gameboard_height / (self.anz_versuche + 3)
+        #######
+        self.stiftkasten_length = self.kasten_height
 
+        #Kreise definieren
         radius = self.kasten_height / 4
+
+        #Matrix für Kreise in Steckplatz erstellen
         self.steckplatz = [[0 for i in range(4)] for j in range(max_anz_versuche)]
 
-        x_koordinate = self.window_length / 3
-        y_koordinate = self.window_height - (1/2)*self.kasten_height
+        kreis_abstand = (self.kasten_length - self.kasten_height) / 4
+        y_koordinate = self.window_height
 
-        # for i in range(len(self.steckplatz)):
-        #
-        #     for j in range(len(self.steckplatz[i])):
-        #
-        #         self.steckplatz[i][j] = Kreis()
+        for i in range(len(self.steckplatz)):
+            y_koordinate -= self.kasten_height
+            x_koordinate = self.window_length / 3 + self.kasten_height + kreis_abstand / 2
+            for j in range(len(self.steckplatz[i])):
+                self.steckplatz[i][j] = Kreis(x_koordinate, y_koordinate, radius)
+                x_koordinate += kreis_abstand
+
+        #Liste für Kreise in Vorlagekasten erstellen
+        self.vorlagekasten = [0 for i in range(4)]
+        kreis_abstand = (self.kasten_length) / 4
+        y_koordinate = y_koordinate - 2 * self.kasten_height
+        x_koordinate = self.window_length / 3 + kreis_abstand / 2
+        for i in range(len(self.vorlagekasten)):
+            self.vorlagekasten[i] = Kreis(x_koordinate, y_koordinate, radius)
+            x_koordinate += kreis_abstand
+
+        #Matrix für Stifte
+        self.stifte = [[0 for i in range(4)] for j in range(max_anz_versuche)]
+        kreis_abstand = (self.kasten_height)
+
 
     def zeichne_gameboard(self):
         x_koordinate = self.window_length / 3
@@ -66,22 +88,35 @@ class Gameboard:
             y_kreis = y_koordinate
 
             #Kasten erstellen
-            pygame.draw.rect(self.screen, BLACK, (x_koordinate, y_koordinate, self.kasten_length, - self.kasten_height), 1)
-            #Rückmeldungsbereich erstellen (als Quadrat)
-            pygame.draw.rect(self.screen, BLACK, (x_koordinate, y_koordinate, self.kasten_height, - self.kasten_height), 1)
+            pygame.draw.rect(self.screen, BOARDCOLOR, (x_koordinate, y_koordinate, self.kasten_length, - self.kasten_height), 0)
+            pygame.draw.rect(self.screen, BLACK, (x_koordinate, y_koordinate, self.kasten_length, - self.kasten_height), 2)
 
-            #leere Kreise erstellen
-            # for i in range(4):
-            #     radius_kreis = self.kasten_height / 2
-            #     pygame.draw.circle(self.screen, BLACK, (x_kreis, y_kreis), radius_kreis, 1)
-            #     x_kreis += (kasten_length - self.kasten_height) / 4
+            #Rückmeldungsbereich erstellen (als Quadrat)
+            pygame.draw.rect(self.screen, BLACK, (x_koordinate, y_koordinate, self.kasten_height, - self.kasten_height), 2)
+
+
+            #leere Kreise im Gameboard erstellen
+            for i in range(len(self.steckplatz)):
+                for j in range(len(self.steckplatz[i])):
+                    pygame.draw.circle(self.screen, self.steckplatz[i][j].farbe,
+                                       (self.steckplatz[i][j].x, self.steckplatz[i][j].y), self.steckplatz[i][j].radius, 0)
+                    pygame.draw.circle(self.screen, BLACK,
+                                       (self.steckplatz[i][j].x, self.steckplatz[i][j].y), self.steckplatz[i][j].radius, 1)
+
 
             y_koordinate -= self.kasten_height
 
-
+        #Vorlagekasten zeichnen
         y_koordinate -= self.kasten_height
-        pygame.draw.rect(self.screen, BLACK, (x_koordinate, y_koordinate, self.kasten_length, - self.kasten_height), 1)
+        pygame.draw.rect(self.screen, BOARDCOLOR, (x_koordinate, y_koordinate, self.kasten_length, - self.kasten_height), 0)
+        pygame.draw.rect(self.screen, BLACK, (x_koordinate, y_koordinate, self.kasten_length, - self.kasten_height), 2)
 
+        # leere Kreise im Vorlagekasten erstellen
+        for i in range(len(self.vorlagekasten)):
+            pygame.draw.circle(self.screen, self.vorlagekasten[i].farbe,
+                               (self.vorlagekasten[i].x, self.vorlagekasten[i].y), self.vorlagekasten[i].radius, 0)
+            pygame.draw.circle(self.screen, BLACK,
+                               (self.vorlagekasten[i].x, self.vorlagekasten[i].y), self.vorlagekasten[i].radius, 1)
 
 class Button:
     def __init__(self, length, height, text, farbe_text, farbe_box, x_kord, y_kord):
