@@ -118,17 +118,30 @@ class Gameboard:
             pygame.draw.circle(self.screen, BLACK,
                                (self.vorlagekasten[i].x, self.vorlagekasten[i].y), self.vorlagekasten[i].radius, 2)
 
-class Button:
-    def __init__(self, length, height, text, farbe_text, farbe_box, x_kord, y_kord):
-        self.length = length
-        self.heigth = height
-        self.text = text
-        self.farbe_text = farbe_text
-        self.farbe_box = farbe_box
-        self.x_kord = x_kord
-        self.y_kord = y_kord
 
-    def zeichne_button(self):
+class Button:
+    def __init__(self, screen, button_length, button_height, button_text, farbe_text, farbe_box, farbe_rand, x_koord, y_koord):
+        self.screen = screen
+        self.button_length = button_length
+        self.button_height = button_height
+        self.button_text = button_text
+        self.farbe_text = farbe_text
+        self.farbe_rand = farbe_rand
+        self.farbe_box = farbe_box
+        self.x_koord = x_koord
+        self.y_koord = y_koord
+
+    def zeichne_button(self, font_obj):
+        box_rect = pygame.Rect(self.x_koord, self.y_koord, self.button_length, self.button_height)
+        pygame.draw.rect(self.screen, self.farbe_box, box_rect, 0)
+        pygame.draw.rect(self.screen, self.farbe_rand, box_rect, 2)
+        #fehlt noch etwas beim einfügen (von game infos einfügen)
+        text_obj = font_obj.render(self.button_text, True, self.farbe_text)
+        rect_text = text_obj.get_rect()  # Position des Textes setzen
+        rect_text.center = box_rect.center
+        self.screen.blit(text_obj, rect_text)
+
+    def update_b_end_turn(self):
         pass
 
 #Main Programm
@@ -148,7 +161,6 @@ def main():
     # game informationen
     gameboard_width = window_length / 3
     gameboard_height = window_height
-
     max_anz_versuche = 12
     ebene = 0
     player = 1
@@ -158,10 +170,27 @@ def main():
     gameboard_width = window_length / 3
     gameboard_height = window_height
 
+    #für text
+    font_obj = pygame.font.Font('freesansbold.ttf', 35)
+
+
+    #button_end_turn Informationen:
+    b_end_turn_length = 200
+    b_end_turn_height = 100
+    b_end_turn_text = 'END TURN'
+    b_end_turn_t_color = BLACK
+    b_end_turn_fill = GREEN
+    b_end_turn_border = BLACK
+    b_end_turn_x = (window_length * 1/3 - b_end_turn_length) / 2
+    b_end_turn_y = (window_height - b_end_turn_height) /  2
+
+
     end_turn = False
 
 ###-------------------------------------------------------------------------###
     my_game = Gameboard(screen, window_length, window_height, gameboard_width, gameboard_height, max_anz_versuche, ebene, player)
+    button_end_turn = Button(screen, b_end_turn_length, b_end_turn_height, b_end_turn_text, b_end_turn_t_color, b_end_turn_fill, b_end_turn_border, b_end_turn_x, b_end_turn_y)
+
 
     is_running = True
     while is_running:  # main game loop
@@ -172,7 +201,9 @@ def main():
                 is_running = False
 
         my_game.zeichne_gameboard()
+        button_end_turn.zeichne_button(font_obj)
         pygame.display.update()
+
 
 
 
