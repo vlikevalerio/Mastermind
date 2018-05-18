@@ -182,8 +182,6 @@ class Button:
     def recolor_unclicked_button(self):
         self.farbe_box = GREEN
 
-    def task_b_end_turn(self):
-        pass
 
 #Main Programm
 def main():
@@ -205,7 +203,6 @@ def main():
     max_anz_versuche = 12
     EBENE = 0
     KREISNUMMER = 0
-    player = 1
 
     FPS = 10
     fps_clock = pygame.time.Clock()
@@ -248,15 +245,14 @@ def main():
 
             if (event.type == pygame.MOUSEBUTTONUP) and (b_end_turn_x <= pygame.mouse.get_pos()[0]) and (pygame.mouse.get_pos()[0] <= (b_end_turn_x + b_end_turn_length)) and (b_end_turn_y <= pygame.mouse.get_pos()[1]) and (pygame.mouse.get_pos()[1] <= (b_end_turn_y + b_end_turn_height)):
                 button_end_turn.recolor_unclicked_button()
-                #task
+                EBENE += 1
+                KREISNUMMER = 0
 
-
+        my_game.steckplatz[EBENE][KREISNUMMER].is_active = True
         my_game.zeichne_gameboard()
         button_end_turn.zeichne_button(font_obj)
         pygame.display.update()
 
-#button click zum laufen bringen
-#farbauswahl programmieren
 
 
 if __name__ == '__main__':
