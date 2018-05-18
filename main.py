@@ -177,7 +177,13 @@ class Button:
         rect_text.center = box_rect.center
         self.screen.blit(text_obj, rect_text)
 
-    def update_b_end_turn(self):
+    def changecolor_clicked_button(self):
+        self.farbe_box = GRAY
+
+    def recolor_unclicked_button(self):
+        self.farbe_box = GREEN
+
+    def task_b_end_turn(self):
         pass
 
 #Main Programm
@@ -213,7 +219,7 @@ def main():
     #button_end_turn Informationen:
     b_end_turn_length = 200
     b_end_turn_height = 100
-    b_end_turn_text = 'END TURN'
+    b_end_turn_text = 'END TURN!'
     b_end_turn_t_color = BLACK
     b_end_turn_fill = GREEN
     b_end_turn_border = BLACK
@@ -236,11 +242,21 @@ def main():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 is_running = False
 
+        #Abfrage ob Button end turn geklickt:
+            if (event.type == pygame.MOUSEBUTTONDOWN) and (b_end_turn_x <= pygame.mouse.get_pos()[0]) and (pygame.mouse.get_pos()[0] <= (b_end_turn_x + b_end_turn_length)) and (b_end_turn_y <= pygame.mouse.get_pos()[1]) and (pygame.mouse.get_pos()[1] <= (b_end_turn_y + b_end_turn_height)):
+                button_end_turn.changecolor_clicked_button()
+
+            if (event.type == pygame.MOUSEBUTTONUP) and (b_end_turn_x <= pygame.mouse.get_pos()[0]) and (pygame.mouse.get_pos()[0] <= (b_end_turn_x + b_end_turn_length)) and (b_end_turn_y <= pygame.mouse.get_pos()[1]) and (pygame.mouse.get_pos()[1] <= (b_end_turn_y + b_end_turn_height)):
+                button_end_turn.recolor_unclicked_button()
+                #task
+
+
         my_game.zeichne_gameboard()
         button_end_turn.zeichne_button(font_obj)
         pygame.display.update()
 
-
+#button click zum laufen bringen
+#farbauswahl programmieren
 
 
 if __name__ == '__main__':
