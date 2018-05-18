@@ -32,16 +32,13 @@ class Kreis:        #Farbe???
         self.farbe = KREISCOLOR
 
 class Gameboard:
-    def __init__(self, screen, window_length, window_height, gameboard_width, gameboard_height, max_anz_versuche, player=1, kreisnummer=1):
+    def __init__(self, screen, window_length, window_height, gameboard_width, gameboard_height, max_anz_versuche):
         self.screen = screen
         self.window_length = window_length
         self.window_height = window_height
         self.gameboard_width = gameboard_width
         self.gameboard_height = gameboard_height
         self.anz_versuche = max_anz_versuche
-        self.ebene = 0
-        self.player = player
-        self.kreisnummer = kreisnummer
         self.kasten_length = self.gameboard_width
         self.kasten_height = self.gameboard_height / (self.anz_versuche + 3)
         #######
@@ -94,6 +91,11 @@ class Gameboard:
             x_stift -= stift_abstand
             y_stift -= self.kasten_height
 
+        #Liste für Farbauswahl
+        self.farbauswahl = [0 for i in range(len(FARBE))]
+        #Kasten erstellen
+#        farbauswahlx =
+
 
     def zeichne_gameboard(self):
         x_koordinate = self.window_length / 3
@@ -120,6 +122,11 @@ class Gameboard:
                                    (self.steckplatz[i][j].x, self.steckplatz[i][j].y), self.steckplatz[i][j].radius, 0)
                 pygame.draw.circle(self.screen, BLACK,
                                    (self.steckplatz[i][j].x, self.steckplatz[i][j].y), self.steckplatz[i][j].radius, 2)
+                if self.steckplatz[i][j].is_active:
+                    # aktiver Kreis mit Rot umkreisen
+                    pygame.draw.circle(self.screen, RED,
+                                       (self.steckplatz[i][j].x, self.steckplatz[i][j].y),
+                                       self.steckplatz[i][j].radius, 2)
 
         #leere Stifte im Gameboard zeichnen
         for i in range(len(self.stifte)):
@@ -142,14 +149,6 @@ class Gameboard:
             pygame.draw.circle(self.screen, BLACK,
                                (self.vorlagekasten[i].x, self.vorlagekasten[i].y), self.vorlagekasten[i].radius, 2)
 
-    #aktiver Kreis mit Rot umkreisen
-    def active_kreis(self, i, j):   #i=level, j=Nummer vom Kreis
-        if j >= len(self.steckplatz[i]):
-            j = len(self.steckplatz[i]) - 1
-        elif j <= 0:
-            j = 0
-        pygame.draw.circle(self.screen, RED,
-                           (self.steckplatz[i][j].x, self.steckplatz[i][j].y), self.steckplatz[i][j].radius, 2)
 
     def kreis_farbe_aendern(self, zeile, spalte, neue_farbe):
         self.steckplatz[zeile][spalte].farbe = neue_farbe
@@ -204,7 +203,8 @@ def main():
     gameboard_width = window_length / 3
     gameboard_height = window_height
     max_anz_versuche = 12
-    ebene = 0
+    EBENE = 0
+    KREISNUMMER = 0
     player = 1
 
     FPS = 10
@@ -230,7 +230,7 @@ def main():
     end_turn = False
 
 ###-------------------------------------------------------------------------###
-    my_game = Gameboard(screen, window_length, window_height, gameboard_width, gameboard_height, max_anz_versuche, ebene, player)
+    my_game = Gameboard(screen, window_length, window_height, gameboard_width, gameboard_height, max_anz_versuche)
     button_end_turn = Button(screen, b_end_turn_length, b_end_turn_height, b_end_turn_text, b_end_turn_t_color, b_end_turn_fill, b_end_turn_border, b_end_turn_x, b_end_turn_y)
 
 
