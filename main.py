@@ -156,153 +156,153 @@ class Gameboard:
             pygame.draw.circle(self.screen, BLACK,
                                (self.vorlagekasten[i].x, self.vorlagekasten[i].y), self.vorlagekasten[i].radius, 2)
 
-        def kreis_farbe_aendern(self, zeile, spalte, neue_farbe):
-            self.steckplatz[zeile][spalte].farbe = neue_farbe
+    def kreis_farbe_aendern(self, zeile, spalte, neue_farbe):
+        self.steckplatz[zeile][spalte].farbe = neue_farbe
 
-        def stift_farbe_aendern(self, zeile, spalte, neue_farbe):
-            self.stifte[zeile][spalte].farbe = neue_farbe
+    def stift_farbe_aendern(self, zeile, spalte, neue_farbe):
+        self.stifte[zeile][spalte].farbe = neue_farbe
 
-        def vorlage_kreis_farbe_aendern(self, index, neue_farbe):
-            self.vorlagekasten[index].farbe = neue_farbe
+    def vorlage_kreis_farbe_aendern(self, index, neue_farbe):
+        self.vorlagekasten[index].farbe = neue_farbe
 
-        def end_of_game(self):
-            pass
+    def end_of_game(self):
+        pass
 
-    class Button:
-        def __init__(self, screen, button_length, button_height, farbe_box, farbe_rand, x_koord, y_koord,
-                     button_text="", farbe_text=BLACK):
-            self.screen = screen
-            self.button_length = button_length
-            self.button_height = button_height
-            self.button_text = button_text
-            self.farbe_text = farbe_text
-            self.farbe_rand = farbe_rand
-            self.farbe_box = farbe_box
-            self.x_koord = x_koord
-            self.y_koord = y_koord
+class Button:
+    def __init__(self, screen, button_length, button_height, farbe_box, farbe_rand, x_koord, y_koord,
+                 button_text="", farbe_text=BLACK):
+        self.screen = screen
+        self.button_length = button_length
+        self.button_height = button_height
+        self.button_text = button_text
+        self.farbe_text = farbe_text
+        self.farbe_rand = farbe_rand
+        self.farbe_box = farbe_box
+        self.x_koord = x_koord
+        self.y_koord = y_koord
 
-        def zeichne_button(self, font_obj):
-            box_rect = pygame.Rect(self.x_koord, self.y_koord, self.button_length, self.button_height)
-            pygame.draw.rect(self.screen, self.farbe_box, box_rect, 0)
-            pygame.draw.rect(self.screen, self.farbe_rand, box_rect, 2)
-            # fehlt noch etwas beim einfügen (von game infos einfügen)
-            text_obj = font_obj.render(self.button_text, True, self.farbe_text)
-            rect_text = text_obj.get_rect()  # Position des Textes setzen
-            rect_text.center = box_rect.center
-            self.screen.blit(text_obj, rect_text)
+    def zeichne_button(self, font_obj):
+        box_rect = pygame.Rect(self.x_koord, self.y_koord, self.button_length, self.button_height)
+        pygame.draw.rect(self.screen, self.farbe_box, box_rect, 0)
+        pygame.draw.rect(self.screen, self.farbe_rand, box_rect, 2)
+        # fehlt noch etwas beim einfügen (von game infos einfügen)
+        text_obj = font_obj.render(self.button_text, True, self.farbe_text)
+        rect_text = text_obj.get_rect()  # Position des Textes setzen
+        rect_text.center = box_rect.center
+        self.screen.blit(text_obj, rect_text)
 
-        def changecolor_clicked_button(self):
-            self.farbe_box = GRAY
+    def changecolor_clicked_button(self):
+        self.farbe_box = GRAY
 
-        def recolor_unclicked_button(self):
-            self.farbe_box = GREEN
+    def recolor_unclicked_button(self):
+        self.farbe_box = GREEN
 
-    # Main Programm
-    def main():
-        pygame.init()
+# Main Programm
+def main():
+    pygame.init()
 
-        # Fenstergroesse
-        window_length = 1000
-        window_height = 700
+    # Fenstergroesse
+    window_length = 1000
+    window_height = 700
 
-        # Das Fenster erstellen
-        screen = pygame.display.set_mode((window_length, window_height), 0, 32)
-        pygame.display.set_caption('Mastermind')
+    # Das Fenster erstellen
+    screen = pygame.display.set_mode((window_length, window_height), 0, 32)
+    pygame.display.set_caption('Mastermind')
+    screen.fill(BACKGROUND)
+
+    # game informationen
+    gameboard_width = window_length / 3
+    gameboard_height = window_height
+    max_anz_versuche = 12
+    EBENE = 0
+    KREISNUMMER = 0
+
+    FPS = 10
+    fps_clock = pygame.time.Clock()
+    gameboard_width = window_length / 3
+    gameboard_height = window_height
+
+    # für text
+    font_obj = pygame.font.Font('freesansbold.ttf', 35)
+
+    # button_end_turn Informationen:
+    b_end_turn_length = 200
+    b_end_turn_height = 100
+    b_end_turn_text = 'END TURN!'
+    b_end_turn_t_color = BLACK
+    b_end_turn_fill = GREEN
+    b_end_turn_border = BLACK
+    b_end_turn_x = (window_length * 1 / 3 - b_end_turn_length) / 2
+    b_end_turn_y = (window_height - b_end_turn_height) / 2
+
+    end_turn = False
+
+    ###-------------------------------------------------------------------------###
+    my_game = Gameboard(screen, window_length, window_height, gameboard_width, gameboard_height, max_anz_versuche)
+    button_end_turn = Button(screen, b_end_turn_length, b_end_turn_height, b_end_turn_fill, b_end_turn_border,
+                             b_end_turn_x, b_end_turn_y, b_end_turn_text, b_end_turn_t_color)
+
+    def faster_preserve():
+        aux = range(len(FARBE))
+        while aux:
+            posit = random.randrange(len(aux))
+            index = aux[posit]
+            elem = data[index]
+            # alters the auxiliary list only
+            del aux[posit]
+            process(elem)
+
+    is_running = True
+    while is_running:  # main game loop
         screen.fill(BACKGROUND)
 
-        # game informationen
-        gameboard_width = window_length / 3
-        gameboard_height = window_height
-        max_anz_versuche = 12
-        EBENE = 0
-        KREISNUMMER = 0
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                is_running = False
 
-        FPS = 10
-        fps_clock = pygame.time.Clock()
-        gameboard_width = window_length / 3
-        gameboard_height = window_height
+            # Abfrage ob Button end turn geklickt:
+            elif (event.type == pygame.MOUSEBUTTONDOWN) and (b_end_turn_x <= pygame.mouse.get_pos()[0]) and (
+                    pygame.mouse.get_pos()[0] <= (b_end_turn_x + b_end_turn_length)) and (
+                    b_end_turn_y <= pygame.mouse.get_pos()[1]) and (
+                    pygame.mouse.get_pos()[1] <= (b_end_turn_y + b_end_turn_height)):
+                button_end_turn.changecolor_clicked_button()
 
-        # für text
-        font_obj = pygame.font.Font('freesansbold.ttf', 35)
+            elif (event.type == pygame.MOUSEBUTTONUP) and (b_end_turn_x <= pygame.mouse.get_pos()[0]) and (
+                    pygame.mouse.get_pos()[0] <= (b_end_turn_x + b_end_turn_length)) and (
+                    b_end_turn_y <= pygame.mouse.get_pos()[1]) and (
+                    pygame.mouse.get_pos()[1] <= (b_end_turn_y + b_end_turn_height)):
+                button_end_turn.recolor_unclicked_button()
 
-        # button_end_turn Informationen:
-        b_end_turn_length = 200
-        b_end_turn_height = 100
-        b_end_turn_text = 'END TURN!'
-        b_end_turn_t_color = BLACK
-        b_end_turn_fill = GREEN
-        b_end_turn_border = BLACK
-        b_end_turn_x = (window_length * 1 / 3 - b_end_turn_length) / 2
-        b_end_turn_y = (window_height - b_end_turn_height) / 2
+                if EBENE == max_anz_versuche:  # spiel ist fertig da spieler zuoberst ist und nicht errraten.
+                    my_game.end_of_game()
+                else:
+                    EBENE += 1
+                    KREISNUMMER = 0
 
-        end_turn = False
 
-        ###-------------------------------------------------------------------------###
-        my_game = Gameboard(screen, window_length, window_height, gameboard_width, gameboard_height, max_anz_versuche)
-        button_end_turn = Button(screen, b_end_turn_length, b_end_turn_height, b_end_turn_fill, b_end_turn_border,
-                                 b_end_turn_x, b_end_turn_y, b_end_turn_text, b_end_turn_t_color)
 
-        def faster_preserve():
-            aux = range(len(FARBE))
-            while aux:
-                posit = random.randrange(len(aux))
-                index = aux[posit]
-                elem = data[index]
-                # alters the auxiliary list only
-                del aux[posit]
-                process(elem)
-
-        is_running = True
-        while is_running:  # main game loop
-            screen.fill(BACKGROUND)
-
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                    is_running = False
-
-                # Abfrage ob Button end turn geklickt:
-                elif (event.type == pygame.MOUSEBUTTONDOWN) and (b_end_turn_x <= pygame.mouse.get_pos()[0]) and (
-                        pygame.mouse.get_pos()[0] <= (b_end_turn_x + b_end_turn_length)) and (
-                        b_end_turn_y <= pygame.mouse.get_pos()[1]) and (
-                        pygame.mouse.get_pos()[1] <= (b_end_turn_y + b_end_turn_height)):
-                    button_end_turn.changecolor_clicked_button()
-
-                elif (event.type == pygame.MOUSEBUTTONUP) and (b_end_turn_x <= pygame.mouse.get_pos()[0]) and (
-                        pygame.mouse.get_pos()[0] <= (b_end_turn_x + b_end_turn_length)) and (
-                        b_end_turn_y <= pygame.mouse.get_pos()[1]) and (
-                        pygame.mouse.get_pos()[1] <= (b_end_turn_y + b_end_turn_height)):
-                    button_end_turn.recolor_unclicked_button()
-
-                    if EBENE == max_anz_versuche:  # spiel ist fertig da spieler zuoberst ist und nicht errraten.
-                        my_game.end_of_game()
-                    else:
-                        EBENE += 1
+            # Mit Pfeilen Kreisnummer wählen:
+            elif event.type == pygame.KEYUP:
+                if event.key == K_RIGHT:
+                    KREISNUMMER += 1
+                    if KREISNUMMER == 4:
                         KREISNUMMER = 0
+                elif event.key == K_LEFT:
+                    KREISNUMMER -= 1
+                    if KREISNUMMER < 0:
+                        KREISNUMMER = 3
 
+        for i in range(len(my_game.steckplatz)):
+            for j in range(len(my_game.steckplatz[i])):
+                if i == EBENE and j == KREISNUMMER:
+                    my_game.steckplatz[i][j].is_active = True
+                else:
+                    my_game.steckplatz[i][j].is_active = False
 
+        my_game.zeichne_gameboard()
+        button_end_turn.zeichne_button(font_obj)
+        pygame.display.update()
 
-                # Mit Pfeilen Kreisnummer wählen:
-                elif event.type == pygame.KEYUP:
-                    if event.key == K_RIGHT:
-                        KREISNUMMER += 1
-                        if KREISNUMMER == 4:
-                            KREISNUMMER = 0
-                    elif event.key == K_LEFT:
-                        KREISNUMMER -= 1
-                        if KREISNUMMER < 0:
-                            KREISNUMMER = 3
-
-            for i in range(len(my_game.steckplatz)):
-                for j in range(len(my_game.steckplatz[i])):
-                    if i == EBENE and j == KREISNUMMER:
-                        my_game.steckplatz[i][j].is_active = True
-                    else:
-                        my_game.steckplatz[i][j].is_active = False
-
-            my_game.zeichne_gameboard()
-            button_end_turn.zeichne_button(font_obj)
-            pygame.display.update()
-
-    if __name__ == '__main__':
-        main()
-        print("Programm beendet.")
+if __name__ == '__main__':
+    main()
+    print("Programm beendet.")
