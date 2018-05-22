@@ -23,6 +23,7 @@ YELLOW     = (255, 255,   0)
 FARBE = [WHITE, GRAY, BLACK, BLUE, PURPLE, PINK, RED, ORANGE, YELLOW, GREEN]
 
 
+
 class Kreis:        #Farbe???
     def __init__(self, x, y, radius):
         self.x = int(x)
@@ -93,8 +94,14 @@ class Gameboard:
 
         #Liste für Farbauswahl
         self.farbauswahl = [0 for i in range(len(FARBE))]
-        #Kasten erstellen
-#        farbauswahlx =
+        #Farbauswahl erstellen
+        farbauswahlx = 2/3 * self.window_length + self.kasten_height
+        farbauswahl_height = 10 * self.kasten_height
+        farbauswahly = 1/4 * window_height
+
+        for i in range(len(self.farbauswahl)):
+            self.farbauswahl[i] = Button(self.screen, self.kasten_height, self.kasten_height, FARBE[i], farbauswahlx, farbauswahly)
+            farbauswahly += self.kasten_height
 
 
     def zeichne_gameboard(self):
