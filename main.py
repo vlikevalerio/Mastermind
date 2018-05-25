@@ -99,9 +99,9 @@ class Gameboard:
         farbauswahl_height = 10 * self.kasten_height
         farbauswahly = 1/4 * window_height
 
-        for i in range(len(self.farbauswahl)):
-            self.farbauswahl[i] = Button(self.screen, self.kasten_height, self.kasten_height, FARBE[i], farbauswahlx, farbauswahly)
-            farbauswahly += self.kasten_height
+        for i in range(len(FARBE)):
+            self.farbauswahl[i] = Button(self.screen, self.kasten_height, self.kasten_height, FARBE[i], BLACK, farbauswahlx, farbauswahly)
+            farbauswahly += self.kasten_height - 2
 
 
     def zeichne_gameboard(self):
@@ -156,6 +156,7 @@ class Gameboard:
             pygame.draw.circle(self.screen, BLACK,
                                (self.vorlagekasten[i].x, self.vorlagekasten[i].y), self.vorlagekasten[i].radius, 2)
 
+
     def kreis_farbe_aendern(self, zeile, spalte, neue_farbe):
         self.steckplatz[zeile][spalte].farbe = neue_farbe
 
@@ -181,7 +182,7 @@ class Button:
         self.x_koord = x_koord
         self.y_koord = y_koord
 
-    def zeichne_button(self, font_obj):
+    def zeichne_button(self, font_obj=None):
         box_rect = pygame.Rect(self.x_koord, self.y_koord, self.button_length, self.button_height)
         pygame.draw.rect(self.screen, self.farbe_box, box_rect, 0)
         pygame.draw.rect(self.screen, self.farbe_rand, box_rect, 2)
@@ -242,16 +243,6 @@ def main():
     button_end_turn = Button(screen, b_end_turn_length, b_end_turn_height, b_end_turn_fill, b_end_turn_border,
                              b_end_turn_x, b_end_turn_y, b_end_turn_text, b_end_turn_t_color)
 
-    def faster_preserve():
-        aux = range(len(FARBE))
-        while aux:
-            posit = random.randrange(len(aux))
-            index = aux[posit]
-            elem = data[index]
-            # alters the auxiliary list only
-            del aux[posit]
-            process(elem)
-
     is_running = True
     while is_running:  # main game loop
         screen.fill(BACKGROUND)
@@ -300,6 +291,9 @@ def main():
                     my_game.steckplatz[i][j].is_active = False
 
         my_game.zeichne_gameboard()
+        #zeichne_farbauswahl
+        for i in range(len(my_game.farbauswahl)):
+            my_game.farbauswahl[i].zeichne_button(font_obj)
         button_end_turn.zeichne_button(font_obj)
         pygame.display.update()
 
