@@ -220,10 +220,10 @@ class Button:
         self.screen.blit(text_obj, rect_text)
 
     def changecolor_clicked_button(self):
-        self.farbe_box = GRAY
+        self.farbe_box = CLICKCOLOR
 
-    def recolor_unclicked_button(self):
-        self.farbe_box = GREEN
+    def recolor_unclicked_button(self, color):
+        self.farbe_box = color
 
 # Main Programm
 def main():
@@ -263,15 +263,25 @@ def main():
     b_end_turn_x = (window_length * 1 / 3 - b_end_turn_length) / 2
     b_end_turn_y = (window_height - b_end_turn_height) / 2
 
-    end_turn = False
 
-    ###-------------------------------------------------------------------------###
     my_game = Gameboard(screen, window_length, window_height, gameboard_width, gameboard_height, max_anz_versuche)
     button_end_turn = Button(screen, b_end_turn_length, b_end_turn_height, b_end_turn_fill, b_end_turn_border,
                              b_end_turn_x, b_end_turn_y, b_end_turn_text, b_end_turn_t_color)
 
     vorlage_farbe = my_game.vorlage_farben_erstellen()          #zufällige Farben werden für den Vorlagekasten erstellt und eine Liste mit den Farben herausgegeben
     #print(vorlage_farbe)
+
+    # farbauswahl koordinaten für klick abfragen
+    farbauswahl_x = 2/3 * my_game.window_length + my_game.kasten_height
+    y_koord_farbauswahl = 1/4 * my_game.window_height
+    farbauswahl_y = []
+    for i in range(len(FARBE)):
+        farbauswahl_y.append(1/4 * my_game.window_height + i * my_game.kasten_height)
+
+
+    end_turn = False
+
+    ###-------------------------------------------------------------------------###
 
     is_running = True
     while is_running:  # main game loop
@@ -292,14 +302,21 @@ def main():
                     pygame.mouse.get_pos()[0] <= (b_end_turn_x + b_end_turn_length)) and (
                     b_end_turn_y <= pygame.mouse.get_pos()[1]) and (
                     pygame.mouse.get_pos()[1] <= (b_end_turn_y + b_end_turn_height)):
-                button_end_turn.recolor_unclicked_button()
+                button_end_turn.recolor_unclicked_button(GREEN)
+
 
                 if EBENE == max_anz_versuche:  # spiel ist fertig da spieler zuoberst ist und nicht errraten.
                     my_game.end_of_game()
-                else:
-                    EBENE += 1
-                    KREISNUMMER = 0
 
+                else:
+                    not_kreiscolor = True
+                    for i in range(4):
+                        not_kreiscolor = not_kreiscolor and my_game.steckplatz[EBENE][i].farbe != KREISCOLOR
+                    if not_kreiscolor:
+                        EBENE += 1
+                        KREISNUMMER = 0
+                    else:
+                        pass
 
 
             # Mit Pfeilen Kreisnummer wählen:
@@ -312,6 +329,34 @@ def main():
                     KREISNUMMER -= 1
                     if KREISNUMMER < 0:
                         KREISNUMMER = 3
+
+
+            #Abfrage ob eine Farbe bei der Farbauswahl geklickt ist und dann den richtigen Kreis Färben.
+            else:
+                 for i in range(0, len(my_game.farbauswahl)):
+                    if (event.type == pygame.MOUSEBUTTONDOWN) and (farbauswahl_x <= pygame.mouse.get_pos()[0]) and (
+                            pygame.mouse.get_pos()[0] <= (farbauswahl_x + my_game.kasten_height)) and (
+                            my_game.farbauswahl[i].y_koord <= pygame.mouse.get_pos()[1]) and (
+                            pygame.mouse.get_pos()[1] <= (my_game.farbauswahl[i].y_koord + my_game.kasten_height)):
+
+                        my_game.farbauswahl[i].changecolor_clicked_button()
+
+                    elif (event.type == pygame.MOUSEBUTTONUP) and (farbauswahl_x <= pygame.mouse.get_pos()[0]) and (
+                            pygame.mouse.get_pos()[0] <= (farbauswahl_x + my_game.kasten_height)) and (
+                            my_game.farbauswahl[i].y_koord <= pygame.mouse.get_pos()[1]) and (
+                            pygame.mouse.get_pos()[1] <= (my_game.farbauswahl[i].y_koord + my_game.kasten_height)):
+
+                        my_game.farbauswahl[i].recolor_unclicked_button(FARBE[i])
+                        my_game.kreis_farbe_aendern(EBENE, KREISNUMMER, FARBE[i])
+
+                        not_kreiscolor1 = True
+                        for i in range(4):
+                            not_kreiscolor1 = not_kreiscolor1 and my_game.steckplatz[EBENE][i].farbe != KREISCOLOR
+                        if not_kreiscolor1:
+                            pass
+                        else:
+                            KREISNUMMER += 1
+
 
         for i in range(len(my_game.steckplatz)):
             for j in range(len(my_game.steckplatz[i])):
