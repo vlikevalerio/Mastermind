@@ -4,23 +4,26 @@
 
 import pygame
 from pygame.constants import *
+import random
 
 #              R    G    B
 BACKGROUND = (110, 193, 150)
 BOARDCOLOR = (168, 101,   9)
 KREISCOLOR = (128,  61,   9)
 BLACK      = (  0,   0,   0)
-BLUE       = (  0,   0, 255)
+BLUE       = (  0, 100, 255)
 GRAY       = (100, 100, 100)
 GREEN      = (  0, 255,   0)
 ORANGE     = (255, 165,   0)
-PINK       = (255,   8, 127)
-PURPLE     = (255,   0, 255)
+PINK       = (255,   0, 255)
+PURPLE     = (121,  54, 152)
 RED        = (255,   0,   0)
 WHITE      = (255, 255, 255)
 YELLOW     = (255, 255,   0)
+CLICKCOLOR = (168, 172, 173)
 
-FARBE = [WHITE, GRAY, BLACK, BLUE, PURPLE, PINK, RED, ORANGE, YELLOW, GREEN]
+FARBE = [RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK, GRAY, BLACK, WHITE]
+VORLAGE_FARBE = [RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK, GRAY, BLACK, WHITE]
 
 
 
@@ -103,6 +106,14 @@ class Gameboard:
             self.farbauswahl[i] = Button(self.screen, self.kasten_height, self.kasten_height, FARBE[i], BLACK, farbauswahlx, farbauswahly)
             farbauswahly += self.kasten_height - 2
 
+    def vorlage_farben_erstellen(self):
+        vorlage_farbe = []
+        for i in range(len(self.vorlagekasten)):
+            index = random.randint(0, len(VORLAGE_FARBE) - 1)
+            farbe_neu = VORLAGE_FARBE.pop(index)
+            self.vorlagekasten[i].farbe = farbe_neu
+            vorlage_farbe.append(farbe_neu)
+        return vorlage_farbe
 
     def zeichne_gameboard(self):
         x_koordinate = self.window_length / 3
@@ -166,8 +177,24 @@ class Gameboard:
     def vorlage_kreis_farbe_aendern(self, index, neue_farbe):
         self.vorlagekasten[index].farbe = neue_farbe
 
+    def farben_abgleichen(self, vorlage_farbe, EBENE):
+        #Abfrage: richtige Farbe an richtigem Platz -> BLACK
+        for i in range(len(self.steckplatz[EBENE])):
+            liste_richtige = []
+            if self.steckplatz[EBENE][i].farbe == vorlage_farbe[i]:
+                liste_richtige.append(True)
+        #Abfrage: richtige Farbe an falschem Platz -> WHITE
+        pass
+
     def end_of_game(self):
         pass
+
+    def zeichne_abdeckung(self):
+        abdeckung_x = 1/3 * self.window_length + 2
+        abdeckung_y = 1/2 * self.kasten_height + 1/5 * self.kasten_height
+        abdeckung_height = self.kasten_height - 2/5 * self.kasten_height
+        pygame.draw.rect(self.screen, GRAY, (abdeckung_x, abdeckung_y, self.kasten_length - 3, abdeckung_height), 0)
+        pygame.draw.rect(self.screen, BLACK, (abdeckung_x, abdeckung_y, self.kasten_length - 3, abdeckung_height), 2)
 
 class Button:
     def __init__(self, screen, button_length, button_height, farbe_box, farbe_rand, x_koord, y_koord,
@@ -243,6 +270,9 @@ def main():
     button_end_turn = Button(screen, b_end_turn_length, b_end_turn_height, b_end_turn_fill, b_end_turn_border,
                              b_end_turn_x, b_end_turn_y, b_end_turn_text, b_end_turn_t_color)
 
+    vorlage_farbe = my_game.vorlage_farben_erstellen()          #zufällige Farben werden für den Vorlagekasten erstellt und eine Liste mit den Farben herausgegeben
+    #print(vorlage_farbe)
+
     is_running = True
     while is_running:  # main game loop
         screen.fill(BACKGROUND)
@@ -290,11 +320,19 @@ def main():
                 else:
                     my_game.steckplatz[i][j].is_active = False
 
+
+
+        game_over = True            #Boolean, dass am
+
+
+
         my_game.zeichne_gameboard()
         #zeichne_farbauswahl
         for i in range(len(my_game.farbauswahl)):
             my_game.farbauswahl[i].zeichne_button(font_obj)
         button_end_turn.zeichne_button(font_obj)
+        if not game_over:
+            my_game.zeichne_abdeckung()
         pygame.display.update()
 
 if __name__ == '__main__':
