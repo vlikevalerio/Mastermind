@@ -25,7 +25,7 @@ CLICKCOLOR = (168, 172, 173)
 FARBE = [RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK, GRAY, BLACK, WHITE]
 VORLAGE_FARBE = [RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK, GRAY, BLACK, WHITE]
 
-#hallo du coole
+#hallo du coole typ
 
 
 class Kreis:        #Farbe???
