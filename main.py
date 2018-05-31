@@ -180,12 +180,44 @@ class Gameboard:
 
     def farben_abgleichen(self, vorlage_farbe, EBENE):
         #Abfrage: richtige Farbe an richtigem Platz -> BLACK
+        game_over = True
+        liste_richtige = []
         for i in range(len(self.steckplatz[EBENE])):
-            liste_richtige = []
             if self.steckplatz[EBENE][i].farbe == vorlage_farbe[i]:
                 liste_richtige.append(True)
+            else:
+                liste_richtige.append(False)
+                game_over = False                   #sobald eine Farbe falsch ist, wird die boolean auf False gewechselt
+
         #Abfrage: richtige Farbe an falschem Platz -> WHITE
-        pass
+        counter_white = 0
+        for i in range(len(liste_richtige)):        #für i = 0:3
+            if not liste_richtige[i]:
+                for j in range(len(liste_richtige)):
+                    if i != j and self.steckplatz[EBENE][i] == vorlage_farbe[j]:     #für alle j != i: wenn steckplatzfarbe bei i == vorlagefarbe bei j:
+                        counter_white += 1
+
+        #Ausgabe erstellen:
+        ausgabe = []
+        #überprüfen, wie viele am richtigen Ort (schwarz) sind
+        counter_black = 0
+        for i in range(len(liste_richtige)):
+            if liste_richtige[i]:
+                counter_black += 1
+        #Ausgabe ergänzen           ------>>> BLACK
+        for i in range(counter_black):
+            ausgabe.append(BLACK)
+
+        #Ausgabe ergänzen           ------>>> WHITE
+        for i in range(counter_white):
+            ausgabe.append(WHITE)
+
+        #Endausgabe
+        if game_over == True:
+            return game_over            #Wenn alle Farben richtig sind, wird True zurückgegeben
+        else:
+            return ausgabe
+
 
     def end_of_game(self):
         pass
