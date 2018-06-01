@@ -222,28 +222,18 @@ class Gameboard:
 
 
     # damit das spiel neu gestartet werden kann
-    def end_of_game(self):
-        #Farben zurücksetzten
+    def end_of_game(self, gewonnen_text, verloren_text):
+        #farben zurücksetzten
         for i in range(len(self.steckplatz)):
             for j in range(len(self.steckplatz[i])):
-                self.steckplatz[i][j].farbe == KREISCOLOR
+                self.kreis_farbe_aendern(i, j, KREISCOLOR)
         for i in range(len(self.stifte)):
             for j in range(len(self.stifte[i])):
-                self.stifte[i][j].farbe == KREISCOLOR
+                self.stift_farbe_aendern(i, j, KREISCOLOR)
 
-        # abdeckung wieder drauf
-        game_over = False
-
-        #neue vorlage farben
-        self.vorlage_farben_erstellen([RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK, GRAY, BLACK, WHITE])
-
-        #aktiver Kreis zurück setzten
-        EBENE = 0
-        KREISNUMMER = 0
-
-        #spielauskunft text zurücksetzten
-        #gewonnen_text.change_text('')
-        #verloren_text.change_text('')
+        # spielauskunft text zurücksetzten
+        gewonnen_text.change_text('')
+        verloren_text.change_text('')
 
     # grauer balken über vorlage damit sie nicht gesehen wird.
     def zeichne_abdeckung(self):
@@ -406,12 +396,20 @@ def main():
                     pygame.mouse.get_pos()[1] <= (b_end_turn_y + b_end_turn_height)):
                 button_end_turn.changecolor_clicked_button()
 
+            #randbedingung falls spiel verloren oder gewonnen und end turn geklickt damit er wieder grün wird!
+            elif (event.type == pygame.MOUSEBUTTONUP) and (b_end_turn_x <= pygame.mouse.get_pos()[0]) and (
+                    pygame.mouse.get_pos()[0] <= (b_end_turn_x + b_end_turn_length)) and (
+                    b_end_turn_y <= pygame.mouse.get_pos()[1]) and (
+                    pygame.mouse.get_pos()[1] <= (b_end_turn_y + b_end_turn_height)) and game_over == True:
+                button_end_turn.recolor_unclicked_button(GREEN)
+
+
             #hoch wieder ursprüngliche farbe und die ganzen vergleiche zwischen vorlage und gesetzter ebene machen.
             elif (event.type == pygame.MOUSEBUTTONUP) and (b_end_turn_x <= pygame.mouse.get_pos()[0]) and (
                     pygame.mouse.get_pos()[0] <= (b_end_turn_x + b_end_turn_length)) and (
                     b_end_turn_y <= pygame.mouse.get_pos()[1]) and (
-                    pygame.mouse.get_pos()[1] <= (b_end_turn_y + b_end_turn_height)) or (event.type == pygame.KEYDOWN) and (
-                    event.key == pygame.K_RETURN):
+                    pygame.mouse.get_pos()[1] <= (b_end_turn_y + b_end_turn_height)) and game_over == False or (event.type == pygame.KEYDOWN) and (
+                    event.key == pygame.K_RETURN) and game_over == False:
                 button_end_turn.recolor_unclicked_button(GREEN)
 
             #spiel fertig??:
@@ -456,7 +454,20 @@ def main():
 
             #falls die taste r gedrückt wird, dann wird das spiel bis auf den spielstand zurückgesetzt und es kann von vorne begonnen werden.
             elif event.type == pygame.KEYUP and event.key == pygame.K_r:
-                my_game.end_of_game()
+                #Kreisfarben und text zurücksetzten
+                my_game.end_of_game(gewonnen_text, verloren_text)
+
+                #aktiver Kreis zurücksetzten
+                EBENE = 0
+                KREISNUMMER = 0
+
+                # abdeckung wieder drauf
+                game_over = False
+
+                # neue vorlage farben
+                vorlage_farbe = my_game.vorlage_farben_erstellen([RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK, GRAY, BLACK, WHITE])
+                print(vorlage_farbe)
+
 
 
             # Mit Pfeilen Kreisnummer wählen:
@@ -481,10 +492,20 @@ def main():
 
                         my_game.farbauswahl[i].changecolor_clicked_button()
 
+                    #randbedingugn falls geklickt ist aber spiel schon fertig
                     elif (event.type == pygame.MOUSEBUTTONUP) and (farbauswahl_x <= pygame.mouse.get_pos()[0]) and (
                             pygame.mouse.get_pos()[0] <= (farbauswahl_x + my_game.kasten_height)) and (
                             my_game.farbauswahl[i].y_koord <= pygame.mouse.get_pos()[1]) and (
-                            pygame.mouse.get_pos()[1] <= (my_game.farbauswahl[i].y_koord + my_game.kasten_height)):
+                            pygame.mouse.get_pos()[1] <= (my_game.farbauswahl[i].y_koord + my_game.kasten_height)) and (
+                            game_over == True):
+
+                        my_game.farbauswahl[i].recolor_unclicked_button(FARBE[i])
+
+                    elif (event.type == pygame.MOUSEBUTTONUP) and (farbauswahl_x <= pygame.mouse.get_pos()[0]) and (
+                            pygame.mouse.get_pos()[0] <= (farbauswahl_x + my_game.kasten_height)) and (
+                            my_game.farbauswahl[i].y_koord <= pygame.mouse.get_pos()[1]) and (
+                            pygame.mouse.get_pos()[1] <= (my_game.farbauswahl[i].y_koord + my_game.kasten_height)) and (
+                            game_over == False):
 
                         my_game.farbauswahl[i].recolor_unclicked_button(FARBE[i])
                         my_game.kreis_farbe_aendern(EBENE, KREISNUMMER, FARBE[i])
@@ -538,3 +559,9 @@ def main():
 if __name__ == '__main__':
     main()
     print("Programm beendet.")
+
+
+
+## abfragen bei enter klicken!!!
+## abfrage bei farbauswahl klicken!!
+## end of game geändert!!!
