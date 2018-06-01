@@ -21,7 +21,6 @@ RED        = (255,   0,   0)
 WHITE      = (255, 255, 255)
 YELLOW     = (255, 255,   0)
 CLICKCOLOR = (168, 172, 173)
-KREISHINTERGRUND = (128,  61,   9)
 
 FARBE = [RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK, GRAY, BLACK, WHITE]
 VORLAGE_FARBE = [RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK, GRAY, BLACK, WHITE]
@@ -224,10 +223,10 @@ class Gameboard:
         #Farben zurücksetzten
         for i in range(len(self.steckplatz)):
             for j in range(len(self.steckplatz[i])):
-                self.steckplatz[i][j].farbe == KREISHINTERGRUND
+                self.steckplatz[i][j].farbe == KREISCOLOR
         for i in range(len(self.stifte)):
             for j in range(len(self.stifte[i])):
-                self.stifte[i][j].farbe == KREISHINTERGRUND
+                self.stifte[i][j].farbe == KREISCOLOR
 
         # abdeckung wieder drauf
         game_over = False
