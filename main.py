@@ -21,6 +21,7 @@ RED        = (255,   0,   0)
 WHITE      = (255, 255, 255)
 YELLOW     = (255, 255,   0)
 CLICKCOLOR = (168, 172, 173)
+KREISHINTERGRUND = (128,  61,   9)
 
 FARBE = [RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK, GRAY, BLACK, WHITE]
 VORLAGE_FARBE = [RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK, GRAY, BLACK, WHITE]
@@ -107,7 +108,7 @@ class Gameboard:
             self.farbauswahl[i] = Button(self.screen, self.kasten_height, self.kasten_height, FARBE[i], BLACK, farbauswahlx, farbauswahly)
             farbauswahly += self.kasten_height - 2
 
-    def vorlage_farben_erstellen(self):
+    def vorlage_farben_erstellen(self, VORLAGE_FARBE):
         vorlage_farbe = []
         for i in range(len(self.vorlagekasten)):
             index = random.randint(0, len(VORLAGE_FARBE) - 1)
@@ -220,7 +221,24 @@ class Gameboard:
 
 
     def end_of_game(self):
-        pass
+        #Farben zurücksetzten
+        for i in range(len(self.steckplatz)):
+            for j in range(len(self.steckplatz[i])):
+                self.steckplatz[i][j].farbe == KREISHINTERGRUND
+        for i in range(len(self.stifte)):
+            for j in range(len(self.stifte[i])):
+                self.stifte[i][j].farbe == KREISHINTERGRUND
+
+        # abdeckung wieder drauf
+        game_over = False
+
+        #neue vorlage farben
+        self.vorlage_farben_erstellen([RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK, GRAY, BLACK, WHITE])
+
+        #aktiver Kreis zurück setzten
+        EBENE = 0
+        KREISNUMMER = 0
+
 
     def zeichne_abdeckung(self):
         abdeckung_x = 1/3 * self.window_length + 2
@@ -247,7 +265,7 @@ class Button:
         pygame.draw.rect(self.screen, self.farbe_box, box_rect, 0)
         pygame.draw.rect(self.screen, self.farbe_rand, box_rect, 2)
         # fehlt noch etwas beim einfügen (von game infos einfügen)
-        text_obj = font_obj.render(self.button_text, True, self.farbe_text)
+        text_obj = font_obj.render(self.button_text, False, self.farbe_text)
         rect_text = text_obj.get_rect()  # Position des Textes setzen
         rect_text.center = box_rect.center
         self.screen.blit(text_obj, rect_text)
@@ -257,6 +275,25 @@ class Button:
 
     def recolor_unclicked_button(self, color):
         self.farbe_box = color
+
+
+class Text:
+    def __init__(self, text, x_pos, y_pos, screen, color=BLACK, groesse=50, schriftart='freesansbold.ttf'):
+        self.text = text
+        self.x_pos = x_pos
+        self.y_pos = y_pos
+        self.groesse = groesse
+        self.schriftart = schriftart
+        self.color = color
+        self.screen = screen
+
+    def print_text(self):
+        myfont = pygame.font.SysFont(self.schriftart, self.groesse)
+        textsurface = myfont.render(self.text, False, self.color)
+        self.screen.blit(textsurface, (self.x_pos, self.y_pos))
+
+    def change_text(self, new_text):
+        self.text = new_text
 
 # Main Programm
 def main():
@@ -283,6 +320,10 @@ def main():
     gameboard_width = window_length / 3
     gameboard_height = window_height
 
+
+    win_counter = 0
+    loss_counter = 0
+
     # für text
     font_obj = pygame.font.Font('freesansbold.ttf', 35)
 
@@ -296,13 +337,19 @@ def main():
     b_end_turn_x = (window_length * 1 / 3 - b_end_turn_length) / 2
     b_end_turn_y = (window_height - b_end_turn_height) / 2
 
+    y_pos_win = 20
 
     my_game = Gameboard(screen, window_length, window_height, gameboard_width, gameboard_height, max_anz_versuche)
     button_end_turn = Button(screen, b_end_turn_length, b_end_turn_height, b_end_turn_fill, b_end_turn_border,
                              b_end_turn_x, b_end_turn_y, b_end_turn_text, b_end_turn_t_color)
 
-    vorlage_farbe = my_game.vorlage_farben_erstellen()          #zufällige Farben werden für den Vorlagekasten erstellt und eine Liste mit den Farben herausgegeben
-    #print(vorlage_farbe)
+    spielstand_win = Text('Wins: ' + str(win_counter), b_end_turn_x, y_pos_win, screen)
+    spielstand_loss = Text('Losses: ' + str(loss_counter), b_end_turn_x, y_pos_win +50, screen)
+
+
+
+    vorlage_farbe = my_game.vorlage_farben_erstellen(VORLAGE_FARBE)          #zufällige Farben werden für den Vorlagekasten erstellt und eine Liste mit den Farben herausgegeben
+    print(vorlage_farbe)
 
     # farbauswahl koordinaten für klick abfragen
     farbauswahl_x = 2/3 * my_game.window_length + my_game.kasten_height
@@ -313,6 +360,7 @@ def main():
 
 
     end_turn = False
+    game_over = False  # Boolean, dass am Schluss Balken weggenommen werden kann.
 
     ###-------------------------------------------------------------------------###
 
@@ -334,23 +382,51 @@ def main():
             elif (event.type == pygame.MOUSEBUTTONUP) and (b_end_turn_x <= pygame.mouse.get_pos()[0]) and (
                     pygame.mouse.get_pos()[0] <= (b_end_turn_x + b_end_turn_length)) and (
                     b_end_turn_y <= pygame.mouse.get_pos()[1]) and (
-                    pygame.mouse.get_pos()[1] <= (b_end_turn_y + b_end_turn_height)):
+                    pygame.mouse.get_pos()[1] <= (b_end_turn_y + b_end_turn_height)) or (event.type == pygame.KEYDOWN) and (
+                    event.key == pygame.K_RETURN):
                 button_end_turn.recolor_unclicked_button(GREEN)
 
 
-                if EBENE == max_anz_versuche:  # spiel ist fertig da spieler zuoberst ist und nicht errraten.
-                    my_game.end_of_game()
+            #spiel fertig??:
+                #nicht geschafft:
+                if EBENE == max_anz_versuche - 1 and  my_game.farben_abgleichen(vorlage_farbe, EBENE) != True:  # spiel ist fertig da spieler zuoberst ist und nicht errraten hat.
+                    #my_game.end_of_game()
+                    loss_counter += 1
+                    spielstand_loss.change_text('Losses: ' + str(loss_counter))
+                    game_over = True
 
-                else:
+                # richtig erraten
+                elif my_game.farben_abgleichen(vorlage_farbe, EBENE) == True:
+                    #my_game.end_of_game()
+                    win_counter += 1
+                    spielstand_win.change_text('Wins: ' + str(win_counter))
+                    game_over = True
+
+                # noch nicht richtig erraten aber auch noch nicht fertig
+                elif type(my_game.farben_abgleichen(vorlage_farbe, EBENE)) == list:
+                    ausgabe_steckplaetze = my_game.farben_abgleichen(vorlage_farbe, EBENE)
+                    # anzahl_weisse = ausgabe_steckplaetze.count(WHITE)
+                    # anzahl_schwarze = ausgabe_steckplaetze.count(BLACK)
+                    #
+                    # for i in range(anzahl_weisse):
+                    #     my_game.stift_farbe_aendern(EBENE, i, WHITE)
+                    #
+                    # for i in range(anzahl_schwarze):
+                    #     my_game.stift_farbe_aendern(EBENE, anzahl_weisse + 1 + i, BLACK)
+
+                    for i in range(len(ausgabe_steckplaetze)):
+                        my_game.stift_farbe_aendern(EBENE, i, ausgabe_steckplaetze[i])
+
                     not_kreiscolor = True
                     for i in range(4):
                         not_kreiscolor = not_kreiscolor and my_game.steckplatz[EBENE][i].farbe != KREISCOLOR
                     if not_kreiscolor:
                         EBENE += 1
                         KREISNUMMER = 0
-                    else:
-                        pass
 
+
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_r:
+                my_game.end_of_game()
 
             # Mit Pfeilen Kreisnummer wählen:
             elif event.type == pygame.KEYUP:
@@ -400,8 +476,6 @@ def main():
 
 
 
-        game_over = True            #Boolean, dass am
-
 
 
         my_game.zeichne_gameboard()
@@ -409,10 +483,15 @@ def main():
         for i in range(len(my_game.farbauswahl)):
             my_game.farbauswahl[i].zeichne_button(font_obj)
         button_end_turn.zeichne_button(font_obj)
+
+        spielstand_win.print_text()
+        spielstand_loss.print_text()
+
         if not game_over:
             my_game.zeichne_abdeckung()
+
         pygame.display.update()
 
 if __name__ == '__main__':
     main()
-    print("Programm beendet.")
+print("Programm beendet.")
