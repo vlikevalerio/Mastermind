@@ -386,6 +386,12 @@ def main():
     # Boolean, dass am Schluss Balken weggenommen werden kann.
     game_over = False
 
+    # Boolean für Grüner Knopf gecklikt:
+    is_clicked = False
+
+    # Boolean für Farbauswahl Knopf gecklikt:
+    is_clickedF = False
+
     ###-----------------------------------------------------------------------------------------------------------------###
 
     # main game loop
@@ -411,6 +417,7 @@ def main():
                     b_end_turn_y <= pygame.mouse.get_pos()[1]) and (
                     pygame.mouse.get_pos()[1] <= (b_end_turn_y + b_end_turn_height)):
                 button_end_turn.changecolor_clicked_button()
+                is_clicked = True
 
 
             #hoch wieder ursprüngliche farbe und die ganzen vergleiche zwischen vorlage und gesetzter ebene machen.
@@ -503,6 +510,7 @@ def main():
                             my_game.farbauswahl[i].y_koord <= pygame.mouse.get_pos()[1]) and (
                             pygame.mouse.get_pos()[1] <= (my_game.farbauswahl[i].y_koord + my_game.kasten_height)):
                         my_game.farbauswahl[i].changecolor_clicked_button()
+                        is_clickedF = True
 
 
                     elif (event.type == pygame.MOUSEBUTTONUP) and (farbauswahl_x <= pygame.mouse.get_pos()[0]) and (
@@ -529,6 +537,21 @@ def main():
                                 KREISNUMMER += 1
                                 if KREISNUMMER == 4:
                                     KREISNUMMER = 0
+
+
+        #  Falls ein Knopf gedrückt, aber Maus nicht auf dem Knopf losgelassen wird, dann einfach Knopf wieder farbig machen.
+        if is_clicked and not ((b_end_turn_x <= pygame.mouse.get_pos()[0]) and (
+                    pygame.mouse.get_pos()[0] <= (b_end_turn_x + b_end_turn_length)) and (
+                    b_end_turn_y <= pygame.mouse.get_pos()[1]) and (
+                    pygame.mouse.get_pos()[1] <= (b_end_turn_y + b_end_turn_height))):
+            button_end_turn.recolor_unclicked_button(GREEN)
+
+        for i in range(0, len(my_game.farbauswahl)):
+            if is_clickedF and not ((farbauswahl_x <= pygame.mouse.get_pos()[0]) and (
+                    pygame.mouse.get_pos()[0] <= (farbauswahl_x + my_game.kasten_height)) and (
+                        my_game.farbauswahl[i].y_koord <= pygame.mouse.get_pos()[1]) and (
+                        pygame.mouse.get_pos()[1] <= (my_game.farbauswahl[i].y_koord + my_game.kasten_height))):
+                my_game.farbauswahl[i].recolor_unclicked_button(FARBE[i])
 
 
         #aktiver Kreis rot umkreisen, alle anderen schwarz
