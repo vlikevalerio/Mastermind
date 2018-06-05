@@ -295,6 +295,9 @@ class Text:
     def change_color_text(self, new_color):
         self.color = new_color
 
+    # def rotate(self, grad=90):
+    #     self = pygame.transform.rotate()
+
 
 #######################################################################################################################
 # Main Programm
@@ -355,6 +358,19 @@ def main():
     verloren_text = Text('', 2/3 * window_length + my_game.kasten_height, y_pos_win + 50, screen, RED)
     r_klicken_text = Text("'R' for Replay", 2/3 * window_length + my_game.kasten_height, y_pos_win, screen)
 
+    b_end_turn_x = 1/2 * b_end_turn_x
+    y_position = 5/6 * window_height - 5
+    schwarz_erklaerung_text_1 = Text("black pin:", b_end_turn_x, y_position, screen, BLACK, 35)
+    schwarz_erklaerung_text_2 = Text("right color at the right spot", b_end_turn_x, y_position + 25, screen, BLACK, 30)
+    weiss_erklaerung_text_1 = Text("white pin:", b_end_turn_x, y_position + 50, screen, BLACK, 35)
+    weiss_erklaerung_text_2 = Text("right color at the wrong spot", b_end_turn_x, y_position + 50 + 25, screen, BLACK, 30)
+
+    # Werbung
+    werbung = Button(screen, 10, 10, BACKGROUND, BACKGROUND, 3/4 * window_length, 1/3 * window_height, "Hier könnte Ihre Werbung stehen", BLACK)
+
+    #werbung = Text("Hier könnte Ihre Werbung stehen", 3/4 * window_length, 1/3 * window_height, screen, BLACK, 30)
+    #werbung = pygame.transform.rotate(screen, 90)
+#    Text()
 
     # zufällige Farben werden für den Vorlagekasten erstellt und eine Liste mit den Farben herausgegeben
     vorlage_farbe = my_game.vorlage_farben_erstellen(VORLAGE_FARBE)
@@ -451,19 +467,6 @@ def main():
                             EBENE += 1
                             KREISNUMMER = 0
 
-            # Falls ein Knopf gedrückt, aber Maus nicht auf dem Knopf losgelassen wird, dann einfach Knopf wieder farbig machen.
-            elif (event.type == pygame.MOUSEBUTTONUP) and (b_end_turn_x <= pygame.mouse.get_pos()[0]) and (
-                    pygame.mouse.get_pos()[0] <= (b_end_turn_x + b_end_turn_length)) and (
-                    b_end_turn_y <= pygame.mouse.get_pos()[1]) and (
-                    pygame.mouse.get_pos()[1] <= (b_end_turn_y + b_end_turn_height))
-
-                button_end_turn.recolor_unclicked_button(GREEN)
-
-                for i in range(0, len(my_game.farbauswahl)):
-                    my_game.farbauswahl[i].recolor_unclicked_button(FARBE[i])
-
-
-
 
             #falls die taste r gedrückt wird, dann wird das spiel bis auf den spielstand zurückgesetzt und es kann von vorne begonnen werden.
             elif event.type == pygame.KEYUP and event.key == pygame.K_r:
@@ -554,6 +557,16 @@ def main():
         #gewonnen_text.change_text('')
         verloren_text.print_text()
         r_klicken_text.print_text()
+
+        #Spielerklärungen text
+        schwarz_erklaerung_text_1.print_text()
+        schwarz_erklaerung_text_2.print_text()
+        weiss_erklaerung_text_1.print_text()
+        weiss_erklaerung_text_2.print_text()
+
+        #Werbung
+        # werbung.print_text()
+        #werbung.zeichne_button(font_obj)
 
         #muss abdeckung gezeichnet werden oder nicht
         if not game_over:
