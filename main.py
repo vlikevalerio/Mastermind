@@ -25,6 +25,7 @@ CLICKCOLOR = (168, 172, 173)
 FARBE = [RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK, GRAY, BLACK, WHITE]
 VORLAGE_FARBE = [RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK, GRAY, BLACK, WHITE]
 
+#hallo du coole typ
 
 
 class Kreis:        #Farbe???
@@ -34,7 +35,6 @@ class Kreis:        #Farbe???
         self.radius = int(radius)
         self.is_active = False
         self.farbe = KREISCOLOR
-
 
 class Gameboard:
     def __init__(self, screen, window_length, window_height, gameboard_width, gameboard_height, max_anz_versuche):
@@ -107,7 +107,7 @@ class Gameboard:
             self.farbauswahl[i] = Button(self.screen, self.kasten_height, self.kasten_height, FARBE[i], BLACK, farbauswahlx, farbauswahly)
             farbauswahly += self.kasten_height - 2
 
-    def vorlage_farben_erstellen(self, VORLAGE_FARBE):
+    def vorlage_farben_erstellen(self):
         vorlage_farbe = []
         for i in range(len(self.vorlagekasten)):
             index = random.randint(0, len(VORLAGE_FARBE) - 1)
@@ -116,7 +116,6 @@ class Gameboard:
             vorlage_farbe.append(farbe_neu)
         return vorlage_farbe
 
-    # spielfeld und kreise werden gezeichnet
     def zeichne_gameboard(self):
         x_koordinate = self.window_length / 3
         y_koordinate = self.window_height - (1/2)*self.kasten_height
@@ -179,70 +178,24 @@ class Gameboard:
     def vorlage_kreis_farbe_aendern(self, index, neue_farbe):
         self.vorlagekasten[index].farbe = neue_farbe
 
-
     def farben_abgleichen(self, vorlage_farbe, EBENE):
         #Abfrage: richtige Farbe an richtigem Platz -> BLACK
-        game_over = True
-        liste_richtige = []
         for i in range(len(self.steckplatz[EBENE])):
+            liste_richtige = []
             if self.steckplatz[EBENE][i].farbe == vorlage_farbe[i]:
                 liste_richtige.append(True)
-            else:
-                liste_richtige.append(False)
-                game_over = False                   #sobald eine Farbe falsch ist, wird die boolean auf False gewechselt
-
         #Abfrage: richtige Farbe an falschem Platz -> WHITE
-        counter_white = 0
-        for i in range(len(liste_richtige)):        #für i = 0:3
-            if not liste_richtige[i]:
-                for j in range(len(liste_richtige)):
-                    if i != j and self.steckplatz[EBENE][i].farbe == vorlage_farbe[j]:     #für alle j != i: wenn steckplatzfarbe bei i == vorlagefarbe bei j:
-                        counter_white += 1
+        pass
 
-        #Ausgabe erstellen:
-        ausgabe = []
-        #überprüfen, wie viele am richtigen Ort (schwarz) sind
-        counter_black = 0
-        for i in range(len(liste_richtige)):
-            if liste_richtige[i]:
-                counter_black += 1
-        #Ausgabe ergänzen           ------>>> BLACK
-        for i in range(counter_black):
-            ausgabe.append(BLACK)
+    def end_of_game(self):
+        pass
 
-        #Ausgabe ergänzen           ------>>> WHITE
-        for i in range(counter_white):
-            ausgabe.append(WHITE)
-
-        #Endausgabe
-        if game_over == True:
-            return game_over            #Wenn alle Farben richtig sind, wird True zurückgegeben
-        else:
-            return ausgabe
-
-
-    # damit das spiel neu gestartet werden kann
-    def end_of_game(self, gewonnen_text, verloren_text):
-        #farben zurücksetzten
-        for i in range(len(self.steckplatz)):
-            for j in range(len(self.steckplatz[i])):
-                self.kreis_farbe_aendern(i, j, KREISCOLOR)
-        for i in range(len(self.stifte)):
-            for j in range(len(self.stifte[i])):
-                self.stift_farbe_aendern(i, j, KREISCOLOR)
-
-        # spielauskunft text zurücksetzten
-        gewonnen_text.change_text('')
-        verloren_text.change_text('')
-
-    # grauer balken über vorlage damit sie nicht gesehen wird.
     def zeichne_abdeckung(self):
         abdeckung_x = 1/3 * self.window_length + 2
         abdeckung_y = 1/2 * self.kasten_height + 1/5 * self.kasten_height
         abdeckung_height = self.kasten_height - 2/5 * self.kasten_height
         pygame.draw.rect(self.screen, GRAY, (abdeckung_x, abdeckung_y, self.kasten_length - 3, abdeckung_height), 0)
         pygame.draw.rect(self.screen, BLACK, (abdeckung_x, abdeckung_y, self.kasten_length - 3, abdeckung_height), 2)
-
 
 class Button:
     def __init__(self, screen, button_length, button_height, farbe_box, farbe_rand, x_koord, y_koord,
@@ -273,30 +226,6 @@ class Button:
     def recolor_unclicked_button(self, color):
         self.farbe_box = color
 
-
-class Text:
-    def __init__(self, text, x_pos, y_pos, screen, color=BLACK, groesse=50, schriftart='freesansbold.ttf'):
-        self.text = text
-        self.x_pos = x_pos
-        self.y_pos = y_pos
-        self.groesse = groesse
-        self.schriftart = schriftart
-        self.color = color
-        self.screen = screen
-
-    def print_text(self):
-        myfont = pygame.font.SysFont(self.schriftart, self.groesse)
-        textsurface = myfont.render(self.text, True, self.color)
-        self.screen.blit(textsurface, (self.x_pos, self.y_pos))
-
-    def change_text(self, new_text):
-        self.text = new_text
-
-    def change_color_text(self, new_color):
-        self.color = new_color
-
-
-#######################################################################################################################
 # Main Programm
 def main():
     pygame.init()
@@ -309,7 +238,6 @@ def main():
     screen = pygame.display.set_mode((window_length, window_height), 0, 32)
     pygame.display.set_caption('Mastermind')
     screen.fill(BACKGROUND)
-    fps_clock = pygame.time.Clock()
 
     # game informationen
     gameboard_width = window_length / 3
@@ -317,10 +245,11 @@ def main():
     max_anz_versuche = 12
     EBENE = 0
     KREISNUMMER = 0
+
     FPS = 10
+    fps_clock = pygame.time.Clock()
     gameboard_width = window_length / 3
     gameboard_height = window_height
-
 
     # für text
     font_obj = pygame.font.Font('freesansbold.ttf', 35)
@@ -335,30 +264,13 @@ def main():
     b_end_turn_x = (window_length * 1 / 3 - b_end_turn_length) / 2
     b_end_turn_y = (window_height - b_end_turn_height) / 2
 
-    #Objekte der Klassen initialisieren:
+
     my_game = Gameboard(screen, window_length, window_height, gameboard_width, gameboard_height, max_anz_versuche)
     button_end_turn = Button(screen, b_end_turn_length, b_end_turn_height, b_end_turn_fill, b_end_turn_border,
                              b_end_turn_x, b_end_turn_y, b_end_turn_text, b_end_turn_t_color)
 
-    #Spielstand informationen:
-    y_pos_win = my_game.kasten_height / 2
-    win_counter = 0
-    loss_counter = 0
-
-    #Spielstand
-    spielstand_win = Text('Wins: ' + str(win_counter), b_end_turn_x, y_pos_win, screen)
-    spielstand_loss = Text('Losses: ' + str(loss_counter), b_end_turn_x, y_pos_win +50, screen)
-
-    #Auskunft über Spielende
-    color_counter = 0
-    gewonnen_text = Text('', 2/3 * window_length + my_game.kasten_height, y_pos_win + 50, screen)
-    verloren_text = Text('', 2/3 * window_length + my_game.kasten_height, y_pos_win + 50, screen, RED)
-    r_klicken_text = Text("'R' for Replay", 2/3 * window_length + my_game.kasten_height, y_pos_win, screen)
-
-
-    # zufällige Farben werden für den Vorlagekasten erstellt und eine Liste mit den Farben herausgegeben
-    vorlage_farbe = my_game.vorlage_farben_erstellen(VORLAGE_FARBE)
-    print(vorlage_farbe)
+    vorlage_farbe = my_game.vorlage_farben_erstellen()          #zufällige Farben werden für den Vorlagekasten erstellt und eine Liste mit den Farben herausgegeben
+    #print(vorlage_farbe)
 
     # farbauswahl koordinaten für klick abfragen
     farbauswahl_x = 2/3 * my_game.window_length + my_game.kasten_height
@@ -367,104 +279,45 @@ def main():
     for i in range(len(FARBE)):
         farbauswahl_y.append(1/4 * my_game.window_height + i * my_game.kasten_height)
 
-    # Boolean, dass am Schluss Balken weggenommen werden kann.
-    game_over = False
 
-    ###-----------------------------------------------------------------------------------------------------------------###
+    end_turn = False
 
-    # main game loop
+    ###-------------------------------------------------------------------------###
 
     is_running = True
-    while is_running:
+    while is_running:  # main game loop
         screen.fill(BACKGROUND)
-
-        #wenn man gewinnt dann blinkt das gewonnen logo in allen möglichen farben
-        color_counter += 1
-        color_counter = color_counter % len(FARBE)
-        gewonnen_text.change_color_text(FARBE[color_counter])
-
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 is_running = False
 
             # Abfrage ob Button end turn geklickt:
-            #runter grau anfärben
             elif (event.type == pygame.MOUSEBUTTONDOWN) and (b_end_turn_x <= pygame.mouse.get_pos()[0]) and (
                     pygame.mouse.get_pos()[0] <= (b_end_turn_x + b_end_turn_length)) and (
                     b_end_turn_y <= pygame.mouse.get_pos()[1]) and (
                     pygame.mouse.get_pos()[1] <= (b_end_turn_y + b_end_turn_height)):
                 button_end_turn.changecolor_clicked_button()
 
-
-            #hoch wieder ursprüngliche farbe und die ganzen vergleiche zwischen vorlage und gesetzter ebene machen.
             elif (event.type == pygame.MOUSEBUTTONUP) and (b_end_turn_x <= pygame.mouse.get_pos()[0]) and (
                     pygame.mouse.get_pos()[0] <= (b_end_turn_x + b_end_turn_length)) and (
                     b_end_turn_y <= pygame.mouse.get_pos()[1]) and (
-                    pygame.mouse.get_pos()[1] <= (b_end_turn_y + b_end_turn_height)) or (event.type == pygame.KEYDOWN) and (
-                    event.key == pygame.K_RETURN):
+                    pygame.mouse.get_pos()[1] <= (b_end_turn_y + b_end_turn_height)):
+                button_end_turn.recolor_unclicked_button(GREEN)
 
-                # randbedingung falls spiel verloren oder gewonnen und end turn geklickt damit er wieder grün wird!
-                if game_over == True:
-                    button_end_turn.recolor_unclicked_button(GREEN)
 
-                #sonst die abfragen machen:
+                if EBENE == max_anz_versuche:  # spiel ist fertig da spieler zuoberst ist und nicht errraten.
+                    my_game.end_of_game()
+
                 else:
-                    button_end_turn.recolor_unclicked_button(GREEN)
-
-                #spiel fertig??:
-                    #nicht geschafft:
-                    if EBENE == max_anz_versuche - 1 and  my_game.farben_abgleichen(vorlage_farbe, EBENE) != True:  # spiel ist fertig da spieler zuoberst ist und nicht errraten hat.
-                        loss_counter += 1
-                        spielstand_loss.change_text('Losses: ' + str(loss_counter))
-                        game_over = True
-
-                        verloren_text.change_text('VERLOREN!')
-
-                        EBENE = 88  #damit farben nicht weiter verstellt werden können
-
-                    # richtig erraten
-                    elif my_game.farben_abgleichen(vorlage_farbe, EBENE) == True:
-                        win_counter += 1
-                        spielstand_win.change_text('Wins: ' + str(win_counter))
-                        game_over = True
-                        for i in range(4):
-                            my_game.stift_farbe_aendern(EBENE, i, BLACK)  #trotzdem alle stifte schwarz machen
-
-                        gewonnen_text.change_text('GEWONNEN!')
-
-                        EBENE = 88  #damit farben nicht mehr weiter verstellt werden können
-
-                    # noch nicht richtig erraten aber auch noch nicht fertig
-                    elif type(my_game.farben_abgleichen(vorlage_farbe, EBENE)) == list: #falls die ausgabe eine liste ist, dann stifte stecken:
-                        ausgabe_steckplaetze = my_game.farben_abgleichen(vorlage_farbe, EBENE)
-
-                        #erst wenn jeder kreis eine andere farbe kann eine ebene hoch gegangen werden.
-                        not_kreiscolor = True
-                        for i in range(4):
-                            not_kreiscolor = not_kreiscolor and my_game.steckplatz[EBENE][i].farbe != KREISCOLOR
-                        if not_kreiscolor:
-                            #die farbe weiss oder schwarz aus der liste nehmen und den platz färben
-                            for i in range(len(ausgabe_steckplaetze)):
-                                my_game.stift_farbe_aendern(EBENE, i, ausgabe_steckplaetze[i])
-
-                            EBENE += 1
-                            KREISNUMMER = 0
-
-
-            #falls die taste r gedrückt wird, dann wird das spiel bis auf den spielstand zurückgesetzt und es kann von vorne begonnen werden.
-            elif event.type == pygame.KEYUP and event.key == pygame.K_r:
-                #Kreisfarben und text zurücksetzten
-                my_game.end_of_game(gewonnen_text, verloren_text)
-                #aktiver Kreis zurücksetzten
-                EBENE = 0
-                KREISNUMMER = 0
-                # abdeckung wieder drauf
-                game_over = False
-                # neue vorlage farben
-                vorlage_farbe = my_game.vorlage_farben_erstellen([RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK, GRAY, BLACK, WHITE])
-                print(vorlage_farbe)
-
+                    not_kreiscolor = True
+                    for i in range(4):
+                        not_kreiscolor = not_kreiscolor and my_game.steckplatz[EBENE][i].farbe != KREISCOLOR
+                    if not_kreiscolor:
+                        EBENE += 1
+                        KREISNUMMER = 0
+                    else:
+                        pass
 
 
             # Mit Pfeilen Kreisnummer wählen:
@@ -486,36 +339,26 @@ def main():
                             pygame.mouse.get_pos()[0] <= (farbauswahl_x + my_game.kasten_height)) and (
                             my_game.farbauswahl[i].y_koord <= pygame.mouse.get_pos()[1]) and (
                             pygame.mouse.get_pos()[1] <= (my_game.farbauswahl[i].y_koord + my_game.kasten_height)):
-                        my_game.farbauswahl[i].changecolor_clicked_button()
 
+                        my_game.farbauswahl[i].changecolor_clicked_button()
 
                     elif (event.type == pygame.MOUSEBUTTONUP) and (farbauswahl_x <= pygame.mouse.get_pos()[0]) and (
                             pygame.mouse.get_pos()[0] <= (farbauswahl_x + my_game.kasten_height)) and (
                             my_game.farbauswahl[i].y_koord <= pygame.mouse.get_pos()[1]) and (
                             pygame.mouse.get_pos()[1] <= (my_game.farbauswahl[i].y_koord + my_game.kasten_height)):
 
-                        # randbedingugn falls geklickt ist aber spiel schon fertig
-                        if game_over == True:
-                            my_game.farbauswahl[i].recolor_unclicked_button(FARBE[i])
+                        my_game.farbauswahl[i].recolor_unclicked_button(FARBE[i])
+                        my_game.kreis_farbe_aendern(EBENE, KREISNUMMER, FARBE[i])
 
-
+                        not_kreiscolor1 = True
+                        for i in range(4):
+                            not_kreiscolor1 = not_kreiscolor1 and my_game.steckplatz[EBENE][i].farbe != KREISCOLOR
+                        if not_kreiscolor1:
+                            pass
                         else:
-                            my_game.farbauswahl[i].recolor_unclicked_button(FARBE[i])
-                            my_game.kreis_farbe_aendern(EBENE, KREISNUMMER, FARBE[i])
-
-                            #falls noch nicht alle kreise eine farbe, dann aktiver kreis automatisch nach rechts rücken. sonst bleiben
-                            not_kreiscolor1 = True
-                            for i in range(4):
-                                not_kreiscolor1 = not_kreiscolor1 and my_game.steckplatz[EBENE][i].farbe != KREISCOLOR
-                            if not_kreiscolor1:
-                                pass
-                            else:
-                                KREISNUMMER += 1
-                                if KREISNUMMER == 4:
-                                    KREISNUMMER = 0
+                            KREISNUMMER += 1
 
 
-        #aktiver Kreis rot umkreisen, alle anderen schwarz
         for i in range(len(my_game.steckplatz)):
             for j in range(len(my_game.steckplatz[i])):
                 if i == EBENE and j == KREISNUMMER:
@@ -524,29 +367,18 @@ def main():
                     my_game.steckplatz[i][j].is_active = False
 
 
-        #gameboard zeichnen
-        my_game.zeichne_gameboard()
 
+        game_over = True            #Boolean, dass am
+
+
+
+        my_game.zeichne_gameboard()
         #zeichne_farbauswahl
         for i in range(len(my_game.farbauswahl)):
             my_game.farbauswahl[i].zeichne_button(font_obj)
         button_end_turn.zeichne_button(font_obj)
-
-        #schreibe spielstand
-        spielstand_win.print_text()
-        spielstand_loss.print_text()
-
-        #spielende text auskunft
-        gewonnen_text.print_text()
-        #gewonnen_text.change_text('')
-        verloren_text.print_text()
-        r_klicken_text.print_text()
-
-        #muss abdeckung gezeichnet werden oder nicht
         if not game_over:
             my_game.zeichne_abdeckung()
-
-        #Bildschirm aktualisieren
         pygame.display.update()
 
 if __name__ == '__main__':
